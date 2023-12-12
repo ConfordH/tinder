@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from "react";
-import TinderCard from "react-tinder-card";
-import "./Tindercard.css";
+import SwipeCard from "react-tinder-card";
+import "../src/TinderCard.css";
 import database from "./Firebase";
 
 function TinderCard() {
   const [people, setPeople] = useState([]);
 
   useEffect(() => {
-    database.collection("people").onSnapshot((snapshot) => {
+    const unsubscribe = database.collection("people").onSnapshot((snapshot) => {
       setPeople(snapshot.docs.map((doc) => doc.data()));
     });
+
+    return () => unsubscribe();
   }, []);
 
   return (
     <div className="tinderCard_cardContainer">
       {people.map((person) => (
-        <div className="Swipe" key={person.name} preventSwipe={["up", "down"]}>
+        <SwipeCard
+          key={person.name}
+          className="swipe"
+          preventSwipe={["up", "down"]}
+        >
           <div
             style={{ backgroundImage: `url(${person.url})` }}
             className="card"
           >
             <h3>{person.name}</h3>
           </div>
-        </div>
+        </SwipeCard>
       ))}
     </div>
   );
